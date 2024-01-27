@@ -284,7 +284,7 @@ def _get_amplifiers(name, parent):
         for checkword in fake_corps:
             if name == checkword:
                 amplifier1 = '1'
-                amplifier2 = '00'
+                amplifier2 = '0'
 
     # if parent is not None:
     #     print(f'{name} -> {parent} => {amplifier1} - {amplifier2}')
