@@ -16,6 +16,8 @@ class SIDC:
         self.entity_subtype = '00'
         self.modifier1 = '00'
         self.modifier2 = '00'
+        # special headquarters
+        self.custom_text = ''
 
     def to_string(self):
         # Set A
@@ -24,6 +26,9 @@ class SIDC:
         # xpylint: disable=line-too-long
         set_b = f'{self.entity}{self.entity_type}{self.entity_subtype}{self.modifier1}{self.modifier2}'
         return f'{set_a}{set_b}'
+    
+    def custom_text(self):
+        return self.custom_text
 
 
 def check(unit_map):
@@ -38,8 +43,10 @@ def check(unit_map):
 
 def update(unit_map):
     for (uid, unit) in unit_map.items():
-        sidc_string = _convert(unit)
+        (sidc_string, custom_text) = _convert(unit)
         unit_map[uid]['sidc'] = sidc_string
+        if custom_text != '':
+            unit_map[uid]['sidc_custom_text'] = sidc_string
     return unit_map
 
 
@@ -61,9 +68,14 @@ def _convert(unit):
     sidc.entity_subtype = entity_subtype
     sidc.modifier1 = modifier1
     sidc.modifier2 = modifier2
+    # set custom text
+    sidc.custom_text = _get_custom_text(name)
+    # if sidc.custom_text != '':
+    #     print(f'{name} - {sidc.custom_text}')
 
-    # finally return sidc string
-    return sidc.to_string()
+    # finally return sidc string + custom text
+    return (sidc.to_string(), sidc.custom_text)
+    # return sidc.to_string()
 
 
 def _prepare_unit_name(name):
@@ -643,10 +655,10 @@ def _get_set_b_land_unit(name):
         entity_type = '17' # security
     elif 'omon' in name: # or is movement->infantry better?
         entity = '14' # protection
-        entity_type = '17' # security
+        # entity_type = '17' # security -# we use custom text
     elif 'bars' in name:
         entity = '12'
-        entity_type = '11'
+        # entity_type = '11' # we use custom text
     elif 'territorial defense brigade' in name:
         entity = '12'
         entity_type = '11'
@@ -670,10 +682,10 @@ def _get_set_b_land_unit(name):
         entity_type = '11'
     elif '[pmc]' in name or 'pmc' in name:
         entity = '12'
-        entity_type = '11'
+        # entity_type = '11' # we use custom text
     elif '[vol]' in name or 'volunteer' in name:
         entity = '12'
-        entity_type = '11'
+        # entity_type = '11' # we use custom text
     elif 'signal' in name:
         entity = '11' # command & control
         entity_type = '10' # signal
@@ -737,3 +749,22 @@ def _get_set_b_land_unit(name):
     set_b = (entity, entity_type, entity_subtype, modifier1, modifier2)
     # print(f'{name} -> {set_b}')
     return set_b
+
+def _get_custom_text(name):
+    custom_text = ''
+    exceptions = {
+        'bars': 'BARS',
+        '[omon]': 'OMON',
+        'omon': 'OMON',
+        '[pmc]': 'PMC',
+        'pmc': 'PMC',
+        'wagner group': 'PMC',
+        '[vol]': 'VOL',
+        'volunteer': 'VOL'
+    }
+    for checkword, txt in exceptions.items():
+        if checkword in name:
+            custom_text = txt
+            break
+
+    return custom_text
