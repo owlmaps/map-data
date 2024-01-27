@@ -698,6 +698,9 @@ def _get_set_b_land_unit(name):
     elif 'marine' in name:
         entity = '12'
         entity_type = '11'
+    elif 'jager' in name:
+        entity = '12'
+        entity_type = '11'
     elif 'combined' in name:
         entity = '12'
         entity_type = '10'
