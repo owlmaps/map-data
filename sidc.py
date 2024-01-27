@@ -262,7 +262,7 @@ def _get_amplifiers(name, parent):
                 amplifier2 = key
                 break
 
-    # exceptions
+    # exceptions & fixes
     # bars & omon units -> battalion
     exceptions = ['bars', '[omon]', '[pmc]', 'pmc']
     for checkword in exceptions:
@@ -279,6 +279,12 @@ def _get_amplifiers(name, parent):
         if 'brigade' in parent and amplifier2 == '1':
             amplifier1 = '1'
             amplifier2 = dict1['battalion']
+    fake_corps = ['freikorps volunteer corps', 'russian volunteer corps', 'muslim corps kavkaz', 'polish volunteer corps']
+    if amplifier2 == '2':
+        for checkword in fake_corps:
+            if name == checkword:
+                amplifier1 = '1'
+                amplifier2 = '00'
 
     # if parent is not None:
     #     print(f'{name} -> {parent} => {amplifier1} - {amplifier2}')
