@@ -46,7 +46,7 @@ def update(unit_map):
         (sidc_string, custom_text) = _convert(unit)
         unit_map[uid]['sidc'] = sidc_string
         if custom_text != '':
-            unit_map[uid]['sidc_custom_text'] = sidc_string
+            unit_map[uid]['sidc_custom_text'] = custom_text
     return unit_map
 
 
