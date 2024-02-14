@@ -365,7 +365,7 @@ class MapData:
 
         # sub method to filter all kmz files
         def filter_kmz(item):
-            if item['type'] == 'file' and '.kmz' in item['path']:
+            if item['type'] == 'file' and '.kmz' in item['path'] and 'latest.kmz' not in item['path']:
                 return True
             return False
 
