@@ -73,7 +73,9 @@ class MapData:
             's': unit['s']
         }
         # update the unit check dict
-        self.unit_check[unit['n']] = new_unit_key
+        # check_key = f'{unit["s"]}_{unit['n']}'
+        # self.unit_check[check_key] = new_unit_key
+        return new_unit_key
 
     # pylint: disable-msg=too-many-locals
     def get_units_and_count(self, kml_root):
@@ -115,14 +117,21 @@ class MapData:
                     if not isinstance(unit.geometry, geometry.Point):
                         continue
 
-                    if unit.name not in self.unit_check:
+                    unit_id = None
+                    check_key = f'{side}_{unit.name}'
+                    if check_key not in self.unit_check:
                         unit_map_data = {
                             'n': unit.name,
                             's': side
                         }
-                        self.add_unit_to_map(unit_map_data)
+                        unit_id = self.add_unit_to_map(unit_map_data)
+                        self.unit_check[check_key] = unit_id
+                    else:
+                        unit_id = self.unit_check[check_key]
+                        # print(f'unit bekannt: {unit.name} - {side} -> {unit_id}')
 
-                    unit_id = self.unit_check[unit.name]
+                    if unit_id is None:
+                        continue
 
                     lon = unit.geometry.coords[0][0]
                     lat = unit.geometry.coords[0][1]
@@ -513,7 +522,8 @@ class MapData:
             int(k): v for k, v in self.data['unit_map'].items()}
         # create unit check dict
         for (k, v) in self.data['unit_map'].items():
-            self.unit_check[v['n']] = k
+            check_key = f'{v['s']}_{v['n']}'
+            self.unit_check[check_key] = k
 
         # based on the diff, prepare the wanted data
         # which is just a list of kmz to process

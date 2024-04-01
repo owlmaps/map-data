@@ -26,9 +26,9 @@ class SIDC:
         # xpylint: disable=line-too-long
         set_b = f'{self.entity}{self.entity_type}{self.entity_subtype}{self.modifier1}{self.modifier2}'
         return f'{set_a}{set_b}'
-    
-    def custom_text(self):
-        return self.custom_text
+
+    # def custom_text(self):
+    #     return self.custom_text
 
 
 def check(unit_map):
