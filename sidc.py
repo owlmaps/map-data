@@ -70,6 +70,8 @@ def _convert(unit):
     sidc.modifier2 = modifier2
     # set custom text
     sidc.custom_text = _get_custom_text(name)
+    # set status
+    sidc.status = _get_status(name)
     # if sidc.custom_text != '':
     #     print(f'{name} - {sidc.custom_text}')
 
@@ -638,6 +640,9 @@ def _get_set_b_land_unit(name):
     elif 'artillery' in name:
         entity = '13' # fires
         entity_type = '03'
+    elif 'army corps' in name:
+        entity = '12'
+        entity_type = '10'
     elif 'combined arms' in name:
         entity = '12'
         entity_type = '10'
@@ -774,3 +779,13 @@ def _get_custom_text(name):
             break
 
     return custom_text
+
+def _get_status(name):
+    status = 0
+    destroyed = ['Moskva', 'Ondatra', 'Ivanovets', 'Minsk', 'Rostov na Donu', 'Cesar Kunikov', 'Novocherkassk', 'Sergey Kotov', 'Askold', 'Saratov', 'A-50 AEWC RF-93966 / 37 Red', 'A-50U AEWC RF-50610 / 42-Red']
+
+    for checkword in destroyed:
+        if checkword.lower() in name:
+            status = 4
+
+    return status
