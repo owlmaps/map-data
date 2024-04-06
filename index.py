@@ -522,7 +522,7 @@ class MapData:
             int(k): v for k, v in self.data['unit_map'].items()}
         # create unit check dict
         for (k, v) in self.data['unit_map'].items():
-            check_key = f'{v['s']}_{v['n']}'
+            check_key = f'{v["s"]}_{v["n"]}'
             self.unit_check[check_key] = k
 
         # based on the diff, prepare the wanted data
