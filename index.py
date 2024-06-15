@@ -227,8 +227,8 @@ class MapData:
 
     def get_fortifications(self, kml_root):
         areas_key = 'Important Areas'
-        fortifications_key = 'Fortifications'
-        dragon_teeth_key = 'Dragon Teeth'
+        # fortifications_key = 'Fortifications'
+        # dragon_teeth_key = 'Dragon Teeth'
 
         trenches_keys = [
             'Trenches Russia',
@@ -240,7 +240,7 @@ class MapData:
             'Tankditches Russia',
             'Tankditches East',
             'Tankditches South'
-        ]        
+        ]
         dragonteeth_keys = [
             'Dragonteeth Russia',
             'Dragonteeth East',
@@ -263,8 +263,10 @@ class MapData:
         for feature in areas.features():
             if isinstance(feature, kml.Placemark):
                 if feature.name in trenches_keys or feature.name in tankditches_keys:
+                    print(feature.name)
                     fortifications = feature
                 if feature.name in dragonteeth_keys:
+                    print(feature.name)
                     dragon_teeth = feature
 
         if fortifications is not None:
