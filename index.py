@@ -249,8 +249,8 @@ class MapData:
 
 
         areas = None
-        fortifications = None
-        dragon_teeth = None
+        fortifications = []
+        dragon_teeth = []
 
         for feature in kml_root.features():
             if isinstance(feature, kml.Folder):
@@ -264,22 +264,22 @@ class MapData:
             if isinstance(feature, kml.Placemark):
                 if feature.name in trenches_keys or feature.name in tankditches_keys:
                     print(feature.name)
-                    fortifications = feature
+                    fortifications.append(feature)
                 if feature.name in dragonteeth_keys:
                     print(feature.name)
-                    dragon_teeth = feature
+                    dragon_teeth.append(feature)
 
-        if fortifications is not None:
-            if isinstance(fortifications.geometry, geometry.MultiLineString):
-                for geom in fortifications.geometry.geoms:
+        for fortification in fortifications:
+            if isinstance(fortification.geometry, geometry.MultiLineString):
+                for geom in fortification.geometry.geoms:
                     coords = []
                     for c in geom.coords:
                         coords.append([c[1], c[0]])
                     self.data['fortifications'].append(coords)
 
-        if dragon_teeth is not None:
-            if isinstance(dragon_teeth.geometry, geometry.MultiLineString):
-                for geom in dragon_teeth.geometry.geoms:
+        for dragon in dragon_teeth:
+            if isinstance(dragon.geometry, geometry.MultiLineString):
+                for geom in dragon.geometry.geoms:
                     coords = []
                     for c in geom.coords:
                         coords.append([c[1], c[0]])
