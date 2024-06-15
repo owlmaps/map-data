@@ -152,7 +152,10 @@ class MapData:
             'Archive Geos (1-2 Months)',
             'Archive Geos (Older than 3 Months)',
             'Archived Older Geolocations (2022)',
-            'Archived Older Geolocations (2023)'
+            'Archived Older Geolocations (2023)',
+            'Archive Older Geos (2022)',
+            'Archived Older Geos (2023)',
+            'Archive Geos (Jan 2024 Onwards)',
         ]
         folders = []
         for feature in kml_root.features():
@@ -226,6 +229,25 @@ class MapData:
         areas_key = 'Important Areas'
         fortifications_key = 'Fortifications'
         dragon_teeth_key = 'Dragon Teeth'
+
+        trenches_keys = [
+            'Trenches Russia',
+            'Trenches East',
+            'Trenches South',
+            'Trenches South'
+        ]
+        tankditches_keys = [
+            'Tankditches Russia',
+            'Tankditches East',
+            'Tankditches South'
+        ]        
+        dragonteeth_keys = [
+            'Dragonteeth Russia',
+            'Dragonteeth East',
+            'Dragonteeth South'
+        ]
+
+
         areas = None
         fortifications = None
         dragon_teeth = None
@@ -240,9 +262,9 @@ class MapData:
 
         for feature in areas.features():
             if isinstance(feature, kml.Placemark):
-                if feature.name == fortifications_key:
+                if feature.name in trenches_keys or feature.name in tankditches_keys:
                     fortifications = feature
-                if feature.name == dragon_teeth_key:
+                if feature.name in dragonteeth_keys:
                     dragon_teeth = feature
 
         if fortifications is not None:
