@@ -263,10 +263,10 @@ class MapData:
         for feature in areas.features():
             if isinstance(feature, kml.Placemark):
                 if feature.name in trenches_keys or feature.name in tankditches_keys:
-                    print(feature.name)
+                    # print(feature.name)
                     fortifications.append(feature)
                 if feature.name in dragonteeth_keys:
-                    print(feature.name)
+                    # print(feature.name)
                     dragon_teeth.append(feature)
 
         for fortification in fortifications:
@@ -307,6 +307,77 @@ class MapData:
 
         return data
 
+    def get_frontline_area(self, kml_root):
+        areas_key = 'Important Areas'
+        data = []
+
+        ru_area_keys = [
+            'Luhansk Axis',
+            # "Donetsk and Luhansk People's Republic",
+            'Crimea',
+            'Zaporizhia and Kherson Axis [Z]',
+            'Donetsk Axis',
+            'Pre-War Crimea',
+            "Luhansk Axis  [Z]",
+            'Donetsk Axis  [Z]',
+            'Crimean Axis [Z]'
+        ]
+        ru_offensive_pattern = r'^(Russian.+Offensive)'
+
+        areas = None
+        ru_areas = []
+
+        for feature in kml_root.features():
+            if isinstance(feature, kml.Folder):
+                if feature.name == areas_key:
+                    areas = feature
+
+        if areas is None:
+            print('no areas folder')
+            return data
+
+        for feature in areas.features():
+            if isinstance(feature, kml.Placemark):
+                # fix non-breaking-spaces
+                feature.name = feature.name.replace('\xa0', ' ')
+                # print(f'#{feature.name.strip()}#')
+                # print(type(feature.name))
+
+                if feature.name.strip() in ru_area_keys:
+                    # print(feature.name)
+                    ru_areas.append(feature)
+                    continue
+
+                match = re.search(ru_offensive_pattern, feature.name, re.IGNORECASE)
+                if match is not None:
+                    # print(feature.name)
+                    ru_areas.append(feature)
+
+        geoms = []
+        for feature in ru_areas:
+            # print(feature.name)
+            # print(type(feature.geometry))
+            if isinstance(feature.geometry, geometry.Polygon):
+                # print(feature.name)
+                geoms.append(feature.geometry)
+            elif isinstance(feature.geometry, geometry.MultiPolygon):
+                for mpoly in feature.geometry.geoms:
+                    # print(feature.name)
+                    geoms.append(mpoly)
+
+        for geom in geoms:
+            poly = []
+            exterior = geom.exterior
+            if isinstance(exterior, geometry.LinearRing):
+                coords = exterior.coords
+                # print(coords)
+                for c in coords:
+                    poly.append([c[1], c[0]])
+                # print(len(poly))
+                data.append(poly)
+
+        return data
+
     def process_kmz(self, item):
 
         # init data set
@@ -320,7 +391,8 @@ class MapData:
                 'ru': [],
                 'ua': []
             },
-            'frontline': []
+            'frontline': [],
+            'areas': []
         }
 
         # request remote file
@@ -370,6 +442,10 @@ class MapData:
         # get frontline data
         frontline_data = self.get_frontline(kml_root)
         data['frontline'] = frontline_data
+
+        # get frontline area
+        frontline_areas = self.get_frontline_area(kml_root)
+        data['areas'] = frontline_areas
 
         # if latest dataset, get all:
         # + geolocations
@@ -582,6 +658,7 @@ class MapData:
                 self.data['timeline'][date_key]['unit_count'] = result['unit_count']
                 self.data['timeline'][date_key]['units'] = result['units']
                 self.data['timeline'][date_key]['frontline'] = result['frontline']
+                self.data['timeline'][date_key]['areas'] = result['areas']
 
         # add geolocations into the timeline object
         for (loc_key, geos) in self.geolocations.items():
@@ -610,7 +687,8 @@ class MapData:
 
         # define what data we want to process
         wanted_data = data_list
-        # wanted_data = data_list[-2:]
+        # wanted_data = data_list[-10:]
+        # wanted_data = data_list[:5]
 
         # threadpool to process the data
         with ThreadPoolExecutor(max_workers=5) as executor:
@@ -620,6 +698,7 @@ class MapData:
                 self.data['timeline'][date_key]['unit_count'] = result['unit_count']
                 self.data['timeline'][date_key]['units'] = result['units']
                 self.data['timeline'][date_key]['frontline'] = result['frontline']
+                self.data['timeline'][date_key]['areas'] = result['areas']
 
         # add geolocations into the timeline object
         for (loc_key, geos) in self.geolocations.items():
