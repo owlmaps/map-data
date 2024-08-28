@@ -155,7 +155,9 @@ class MapData:
             'Archived Older Geolocations (2023)',
             'Archive Older Geos (2022)',
             'Archived Older Geos (2023)',
+            'Archive Geos (Jan 2024 - Jul 2024)',
             'Archive Geos (Jan 2024 Onwards)',
+            'Archive Geos (Jul 2024 Onwards)',
         ]
         folders = []
         for feature in kml_root.features():
@@ -309,7 +311,10 @@ class MapData:
 
     def get_frontline_area(self, kml_root):
         areas_key = 'Important Areas'
-        data = []
+        data = {
+            'ru': [],
+            'ua': [],
+        }
 
         ru_area_keys = [
             'Luhansk Axis',
@@ -324,8 +329,14 @@ class MapData:
         ]
         ru_offensive_pattern = r'^(Russian.+Offensive)'
 
+        # special ua areas
+        ua_area_keys = [
+            'Ukrainian Kursk Incursion'
+        ]
+
         areas = None
         ru_areas = []
+        ua_areas = []
 
         for feature in kml_root.features():
             if isinstance(feature, kml.Folder):
@@ -353,28 +364,43 @@ class MapData:
                     # print(feature.name)
                     ru_areas.append(feature)
 
-        geoms = []
+                if feature.name.strip() in ua_area_keys:
+                    ua_areas.append(feature)
+                    continue
+
+        geoms_ru = []
+        geoms_ua = []
         for feature in ru_areas:
-            # print(feature.name)
-            # print(type(feature.geometry))
             if isinstance(feature.geometry, geometry.Polygon):
-                # print(feature.name)
-                geoms.append(feature.geometry)
+                geoms_ru.append(feature.geometry)
             elif isinstance(feature.geometry, geometry.MultiPolygon):
                 for mpoly in feature.geometry.geoms:
-                    # print(feature.name)
-                    geoms.append(mpoly)
+                    geoms_ru.append(mpoly)
 
-        for geom in geoms:
+        for feature in ua_areas:
+            if isinstance(feature.geometry, geometry.Polygon):
+                geoms_ua.append(feature.geometry)
+            elif isinstance(feature.geometry, geometry.MultiPolygon):
+                for mpoly in feature.geometry.geoms:
+                    geoms_ua.append(mpoly)
+
+        for geom in geoms_ru:
             poly = []
             exterior = geom.exterior
             if isinstance(exterior, geometry.LinearRing):
                 coords = exterior.coords
-                # print(coords)
                 for c in coords:
                     poly.append([c[1], c[0]])
-                # print(len(poly))
-                data.append(poly)
+                data['ru'].append(poly)
+
+        for geom in geoms_ua:
+            poly = []
+            exterior = geom.exterior
+            if isinstance(exterior, geometry.LinearRing):
+                coords = exterior.coords
+                for c in coords:
+                    poly.append([c[1], c[0]])
+                data['ua'].append(poly)
 
         return data
 
@@ -392,7 +418,8 @@ class MapData:
                 'ua': []
             },
             'frontline': [],
-            'areas': []
+            'areas': [],            
+            'areas_ua': []
         }
 
         # request remote file
@@ -445,7 +472,8 @@ class MapData:
 
         # get frontline area
         frontline_areas = self.get_frontline_area(kml_root)
-        data['areas'] = frontline_areas
+        data['areas'] = frontline_areas['ru']
+        data['areas_ua'] = frontline_areas['ua']
 
         # if latest dataset, get all:
         # + geolocations
@@ -545,6 +573,8 @@ class MapData:
                     'ua': []
                 },
                 'frontline': [],
+                'areas': [],
+                'areas_ua': [],
                 'geos': []
             }
 
@@ -659,6 +689,7 @@ class MapData:
                 self.data['timeline'][date_key]['units'] = result['units']
                 self.data['timeline'][date_key]['frontline'] = result['frontline']
                 self.data['timeline'][date_key]['areas'] = result['areas']
+                self.data['timeline'][date_key]['areas_ua'] = result['areas_ua']
 
         # add geolocations into the timeline object
         for (loc_key, geos) in self.geolocations.items():
