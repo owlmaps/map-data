@@ -1,16 +1,19 @@
-import os
-import pathlib
 import argparse
-from datetime import timedelta, datetime
-from concurrent.futures import ThreadPoolExecutor
-from zipfile import ZipFile, BadZipfile
 import csv
 import json
+import os
+import pathlib
 import re
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timedelta
+from zipfile import BadZipfile, ZipFile
+
 import requests
-from fastkml import kml, geometry
 from dotenv import load_dotenv
+from fastkml import geometry, kml
+
 import sidc
+
 load_dotenv()
 
 
@@ -300,12 +303,14 @@ class MapData:
 
         # frotline data
         if frontline_folder is not None:
-            for feature in frontline_folder.features():
-                if feature.name == frontline_key:
-                    if isinstance(feature, kml.Placemark):
-                        coords = feature.geometry.coords
-                        for c in coords:
-                            data.append([c[1], c[0]])
+            for feature in frontline_folder.features():                
+                # if feature.name == frontline_key:
+                if isinstance(feature, kml.Placemark):
+                    feat_data = []
+                    coords = feature.geometry.coords
+                    for c in coords:
+                        feat_data.append([c[1], c[0]])
+                data.append(feat_data)
 
         return data
 
@@ -327,7 +332,7 @@ class MapData:
             'Donetsk Axis  [Z]',
             'Crimean Axis [Z]'
         ]
-        ru_offensive_pattern = r'^(Russian.+Offensive)'
+        ru_pattern = r'^(Russian)'
 
         # special ua areas
         ua_area_keys = [
@@ -359,7 +364,7 @@ class MapData:
                     ru_areas.append(feature)
                     continue
 
-                match = re.search(ru_offensive_pattern, feature.name, re.IGNORECASE)
+                match = re.search(ru_pattern, feature.name, re.IGNORECASE)
                 if match is not None:
                     # print(feature.name)
                     ru_areas.append(feature)
