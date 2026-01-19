@@ -786,9 +786,12 @@ def _get_set_b_land_unit(name):
     # a few quick cases to set modifier1
     if 'marine' in name or 'naval' in name:
         modifier1 = '46' # naval
-
-    if 'moutain' in name:
+    
+    # modifier2
+    if 'mountain' in name:
         modifier2 = '27'
+    elif 'airmobile' in name or 'air asault' in name:
+        modifier2 = '01'        
 
     # if entity_type == '00' and 'corps' not in name:
     #     print(name)
