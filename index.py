@@ -322,21 +322,23 @@ class MapData:
         }
 
         ru_area_keys = [
-            'Luhansk Axis',
-            # "Donetsk and Luhansk People's Republic",
             'Crimea',
             'Zaporizhia and Kherson Axis [Z]',
             'Donetsk Axis',
-            'Pre-War Crimea',
-            "Luhansk Axis  [Z]",
-            'Donetsk Axis  [Z]',
-            'Crimean Axis [Z]',
-            'Dnipropetrovsk Axis',
-            'Donetsk Axis',
-            'Russian N Kharkiv Offensive 2',
+            'Transnistria',
             'Russian N Kharkiv Offensive',
+            'Russian N Kharkiv Offensive 2',
+            'Luhansk Axis',
+            'Dnipropetrovsk Axis',
             'Russian Sumy Incursion',
-            'Kharkiv Axis'
+            'Russian Vovchansk Advances 2026',
+            'Dnipropetrovsk 2',
+            'Kharkiv Axis',
+            'Sumy Incursion 2',
+            'Russian Zaporizhia Advances 2026',
+            'Russian Dnipropetrovsk Advances 2026',
+            'Russian Donetsk Advances 2026',
+            'Russian Sumy Advances 2026',
         ]
         ru_pattern = r'^(Russian)'
 
@@ -362,11 +364,11 @@ class MapData:
             if isinstance(feature, kml.Placemark):
                 # fix non-breaking-spaces
                 feature.name = feature.name.replace('\xa0', ' ')
-                # print(f'#{feature.name.strip()}#')
-                # print(type(feature.name))
+                print(f'#{feature.name.strip()}#')
+                #print(type(feature.name))
 
                 if feature.name.strip() in ru_area_keys:
-                    # print(feature.name)
+                    print(f'-> {feature.name.strip()}')
                     ru_areas.append(feature)
                     continue
 
@@ -387,6 +389,7 @@ class MapData:
             elif isinstance(feature.geometry, geometry.MultiPolygon):
                 for mpoly in feature.geometry.geoms:
                     geoms_ru.append(mpoly)
+
 
         for feature in ua_areas:
             if isinstance(feature.geometry, geometry.Polygon):
