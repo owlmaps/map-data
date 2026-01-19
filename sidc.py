@@ -558,8 +558,8 @@ def _get_set_b_air(name):
             entity_subtype = key
             break
 
-    if 'assault' in name:
-        modifier1 = '01'
+    # elif 'assault' in name:
+    #     modifier1 = '01'
     # modifier1 - we don't use them for now
     # if 'mixed' in name:
     #     modifier1 = '01'
@@ -615,6 +615,9 @@ def _get_set_b_land_unit(name):
     elif 'air assault' in name:
         entity = '12'
         entity_type = '11' # infantry
+    elif 'mountain assault' in name:
+        entity = '12'
+        entity_type = '11' # infantry        
     elif 'tank' in name:
         entity = '12'
         entity_type = '05'
@@ -775,14 +778,17 @@ def _get_set_b_land_unit(name):
             entity_subtype = '04'
         elif 'mechanized' in name:
             entity_subtype = '02'
-        elif 'assault' in name:
-            entity_subtype = '02'
+        # elif 'assault' in name:
+        #     entity_subtype = '02'
         elif 'coastal defense' in name:
             entity_subtype = '05'
 
     # a few quick cases to set modifier1
     if 'marine' in name or 'naval' in name:
         modifier1 = '46' # naval
+
+    if 'moutain' in name:
+        modifier2 = '27'
 
     # if entity_type == '00' and 'corps' not in name:
     #     print(name)
