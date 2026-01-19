@@ -558,6 +558,8 @@ def _get_set_b_air(name):
             entity_subtype = key
             break
 
+    if 'assault' in name:
+        modifier1 = '01'
     # modifier1 - we don't use them for now
     # if 'mixed' in name:
     #     modifier1 = '01'
@@ -637,6 +639,9 @@ def _get_set_b_land_unit(name):
     elif 'engineering' in name or 'engineer' in name:
         entity = '14' # protection
         entity_type = '07' # engineer
+    elif 'support' in name or 'pontoon' in name:
+        entity = '14' # protection
+        entity_type = '07' # engineer        
     elif 'artillery' in name:
         entity = '13' # fires
         entity_type = '03'
@@ -679,6 +684,9 @@ def _get_set_b_land_unit(name):
     elif 'airborne' in name:
         entity = '12'
         entity_type = '11'
+    elif 'mountain assault' in name:
+        entity = '12'
+        entity_type = '02'
     elif 'motorized' in name:
         entity = '12'
         entity_type = '11'
@@ -742,6 +750,24 @@ def _get_set_b_land_unit(name):
     elif 'battalion' in name: # should be last, as a catch all
         entity = '12'
         entity_type = '11'
+    elif "assault":
+        entity = '12'
+        entity_type = '11'
+    elif "airmobile":
+        entity = '12'
+        entity_type = '11'
+    elif "coastal defense":
+        entity = '12'
+        entity_type = '11'
+    elif "guard":
+        entity = '12'
+        entity_type = '11'
+    elif "support":
+        entity = '14'
+        entity_type = '07'
+    elif "pontoon":
+        entity = '14'
+        entity_type = '07'
 
     # a few quick cases to set the entity_subtype
     if entity == '12' and entity_type == '11':
@@ -749,6 +775,10 @@ def _get_set_b_land_unit(name):
             entity_subtype = '04'
         elif 'mechanized' in name:
             entity_subtype = '02'
+        elif 'assault' in name:
+            entity_subtype = '02'
+        elif 'coastal defense' in name:
+            entity_subtype = '05'
 
     # a few quick cases to set modifier1
     if 'marine' in name or 'naval' in name:
