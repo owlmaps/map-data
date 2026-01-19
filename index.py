@@ -330,7 +330,13 @@ class MapData:
             'Pre-War Crimea',
             "Luhansk Axis  [Z]",
             'Donetsk Axis  [Z]',
-            'Crimean Axis [Z]'
+            'Crimean Axis [Z]',
+            'Dnipropetrovsk Axis',
+            'Donetsk Axis',
+            'Russian N Kharkiv Offensive 2',
+            'Russian N Kharkiv Offensive',
+            'Russian Sumy Incursion',
+            'Kharkiv Axis'
         ]
         ru_pattern = r'^(Russian)'
 
