@@ -4,6 +4,7 @@ import json
 import os
 import pathlib
 import re
+import sys
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 from zipfile import BadZipfile, ZipFile
@@ -506,7 +507,7 @@ class MapData:
         # fnally, return processed kmz data
         return data
 
-    def get_kmz_list(self):
+    def get_kmz_list_OLD(self):
 
         # repo url
         data_repo_api_url = os.getenv('DATA_REPO_API_URL')
@@ -619,6 +620,53 @@ class MapData:
             with open(f'./data/{date_key}.json', "w", encoding='utf-8') as fh:
                 json.dump(self.data['timeline'][date_key], fh,
                           sort_keys=True, separators=(',', ':'))
+
+    def get_kmz_list(self):
+
+        kmz_list = []
+
+        # repo url
+        data_repo_api_url = os.getenv('DATA_REPO_API_URL')
+
+        # get json file listing
+        file_list_json = self._request(data_repo_api_url, 'json')
+
+        # sub memthod to filer the year folderss
+        def filter_years(item):
+            if item['type'] == 'dir' and not item['name'].startswith('.'):
+                return True
+            return False
+        
+        # sub method to filter all kmz files
+        def filter_kmz(item):
+            if item['type'] == 'file' and '.kmz' in item['path'] and 'latest.kmz' not in item['path']:
+                return True
+            return False
+
+        years = list(filter(filter_years, file_list_json))
+        for year in years:
+            file_list_json = self._request(f'{data_repo_api_url}/{year['name']}', 'json')
+            kmz_list_year = list(filter(filter_kmz, file_list_json))
+            kmz_list.extend(kmz_list_year)
+
+        # sub method to reoganize the data object
+        def prepare_data(item):
+            date_string = item['name'].split('_')[0]
+            return {
+                'file_date_string': date_string,
+                'real_data_date': self.substract_day(date_string, out_format='%Y%m%d'),
+                'name': item['name'],
+                'url': item['download_url'],
+                'is_latest': False
+            }
+
+        # apply prepare data method
+        data_list = list(map(prepare_data, kmz_list))
+
+        # return final data
+        return data_list
+
+
 
     def update(self):
         print('UPDATE DATA')
