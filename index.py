@@ -645,7 +645,7 @@ class MapData:
 
         years = list(filter(filter_years, file_list_json))
         for year in years:
-            file_list_json = self._request(f'{data_repo_api_url}/{year['name']}', 'json')
+            file_list_json = self._request(f'{data_repo_api_url}/{year["name"]}', 'json')
             kmz_list_year = list(filter(filter_kmz, file_list_json))
             kmz_list.extend(kmz_list_year)
 
